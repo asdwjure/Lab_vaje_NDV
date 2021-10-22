@@ -1,0 +1,6 @@
+NET x1 LOC=B6;
+NET x2 LOC=C5;
+NET x3 LOC=B7;
+NET x4 LOC=A9;
+
+NET f LOC=B2;
