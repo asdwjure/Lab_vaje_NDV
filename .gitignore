@@ -1,0 +1,3 @@
+# ignore some files only in top directory
+/*.sh
+/vivado.*
