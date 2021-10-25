@@ -23,7 +23,7 @@ begin
 
     u_xor2vrata_1 : entity work.xor2vrata
         port map (
-            A => p1,
+            A => p0,
             B => X(2),
             C => p1
         );
