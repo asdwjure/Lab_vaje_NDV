@@ -1,6 +1,0 @@
-NET x1 LOC=B4;
-NET x2 LOC=K3;
-NET x3 LOC=L3;
-NET x4 LOC=P11;
-
-NET f LOC=M5;
