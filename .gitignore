@@ -1,4 +1,6 @@
 # ignore some files only in top directory
 /*.sh
-/vivado.*
-Lab_vaja_1/vivado/
+
+# Ignore files globally
+*.jou
+*.log

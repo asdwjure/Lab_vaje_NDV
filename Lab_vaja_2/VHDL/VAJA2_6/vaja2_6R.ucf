@@ -1,0 +1,36 @@
+
+# DIP switches NEW
+net DIP(7) loc = B2; 
+net DIP(6) loc = A3; 	
+net DIP(5) loc = J3; 	
+net DIP(4) loc = B5; 	
+net DIP(3) loc = A13; 	
+net DIP(2) loc = C13; 	
+net DIP(1) loc = D12; 	
+net DIP(0) loc = C6; 	
+
+
+
+# LED display digits
+NET nDIGIT(3) LOC=K14;
+NET nDIGIT(2) LOC=M13;
+NET nDIGIT(1) LOC=J12;
+NET nDIGIT(0) LOC=F12;
+
+# LED display segments
+NET LED(6) LOC=M12;
+NET LED(5) LOC=L13;
+NET LED(4) LOC=P12;
+NET LED(3) LOC=N11;
+NET LED(2) LOC=N14;
+NET LED(1) LOC=H12;
+NET LED(0) LOC=L14;
+
+
+NET DIGIT_SHIFT LOC=C9;
+
+
+
+
+
+
