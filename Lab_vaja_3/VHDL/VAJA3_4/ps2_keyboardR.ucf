@@ -1,0 +1,18 @@
+# LEDs
+NET ps2_code(7) LOC=B2;
+NET ps2_code(6) LOC=A3;
+NET ps2_code(5) LOC=J3;
+NET ps2_code(4) LOC=B5;
+NET ps2_code(3) LOC=A13;
+NET ps2_code(2) LOC=C13;
+NET ps2_code(1) LOC=D12;
+NET ps2_code(0) LOC=C6;
+
+
+NET ps2_code_new LOC=C5;
+
+# Neutral clock 
+NET clk LOC=B8;
+
+NET ps2_clk LOC=B1;
+NET ps2_data LOC=C3;
