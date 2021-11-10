@@ -20,7 +20,7 @@ begin
             Q <= '0';
         else
             if rising_edge(clk) then
-                Q <= D;
+                Q <= D after 1 ns;
             end if;
         end if;
     end process p_DFlipFlop;

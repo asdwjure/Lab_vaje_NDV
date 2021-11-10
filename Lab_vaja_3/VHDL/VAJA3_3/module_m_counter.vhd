@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 entity module_m_counter is
 	generic(
-		M : natural := 60
+		M : natural := 2750
 	);
 	Port (
 		nRST, clk : in  STD_LOGIC;
