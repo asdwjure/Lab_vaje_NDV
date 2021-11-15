@@ -56,9 +56,7 @@ begin
    n_sig    <= s_sig(s_sig'left);
    Negative <= n_sig;
 
-   Overflow <= (n_sig xor claCOutSig) and not(claPoutSig); -- Poenostavitve??!!
-   -- Overflow <= ( not(X(n-1)) and not(Y(n-1)) and not(claSSig(n-1)) ) or ( X(n-1) and Y(n-1) and claSSig(n-1) );
-   -- Overflow <= claCOutSig xor ( claSSig(claSSig'left) xor (claPoutSig xor claGoutSig) );
+   Overflow <= ( not(X(n-1)) and not(claYSig(n-1)) and claSSig(n-1) ) or ( X(n-1) and claYSig(n-1) and not(claSSig(n-1)) );
 
    -----------------------------------------------------------------------------
    -- Operation mode selection
@@ -73,7 +71,7 @@ begin
       ONE_C      when "0010", -- X+1
       not(ONE_C) when "0011", -- X-1
       X          when "0100", -- X+X
-      Y when others;
+      Y          when others;
 
    -- Select between arithmetic and logic mode
    with aluOperationSig select
@@ -97,8 +95,10 @@ begin
       Y               when "1111",
       (others => '0') when others;
 
-   S <= s_sig; -- Drive outputs
-   Pout     <= claPoutSig;
+   -----------------------------------------------------------------------------
+   -- Drive outputs
+   S    <= s_sig;
+   Pout <= claPoutSig;
    Gout <= claGoutSig;
 
 end NDV;
