@@ -17,11 +17,16 @@ end alu_cla;
 architecture NDV of alu_cla is
 
    signal aluOperationSig : std_logic_vector(3 downto 0) := "0000";
-   signal ySig            : std_logic_vector(n-1 downto 0);
+   signal claYSig         : std_logic_vector(n-1 downto 0);
    signal addSubSig       : std_logic; -- '0' for adding, '1' for substraction
    signal claCOutSig      : std_logic;
+   signal claPoutSig      : std_logic;
+   signal claGoutSig      : std_logic;
    signal claSSig         : std_logic_vector(n-1 downto 0);
+   signal n_sig           : std_logic;
 
+   signal s_sig : std_logic_vector(n-1 downto 0);
+   -- signal x_sig : std_logic_vector(n-1 downto 0);
 
    constant ZERO_C : std_logic_vector(n-1 downto 0) := (others => '0');
    constant ONE_C  : std_logic_vector(n-1 downto 0) := (0      => '1', others => '0');
@@ -35,10 +40,10 @@ begin
       port map (
          Cin  => addSubSig,
          X    => X,
-         Y    => ySig,
+         Y    => claYSig,
          S    => claSSig,
-         Gout => Gout,
-         Pout => Pout,
+         Gout => claGoutSig,
+         Pout => claPoutSig,
          Cout => claCOutSig
       );
 
@@ -46,10 +51,14 @@ begin
    -----------------------------------------------------------------------------
    -- Status flags
    Cout <= claCOutSig;
-   Zero <= '1' when claSSig = ZERO_C else '0';
-   Negative <= claSSig(claSSig'left);
+   Zero <= '1' when s_sig = ZERO_C else '0';
 
-   Overflow <= claOutSig; -- TODO: Realize overflow
+   n_sig    <= s_sig(s_sig'left);
+   Negative <= n_sig;
+
+   Overflow <= (n_sig xor claCOutSig) and not(claPoutSig); -- Poenostavitve??!!
+   -- Overflow <= ( not(X(n-1)) and not(Y(n-1)) and not(claSSig(n-1)) ) or ( X(n-1) and Y(n-1) and claSSig(n-1) );
+   -- Overflow <= claCOutSig xor ( claSSig(claSSig'left) xor (claPoutSig xor claGoutSig) );
 
    -----------------------------------------------------------------------------
    -- Operation mode selection
@@ -58,24 +67,23 @@ begin
 
    -- Select y signal to the CLA with regard to arithmetic mode selected
    with aluOperationSig select
-   ySig <=
-      Y          when "0000",
-      not(Y)     when "0001",
-      ONE_C      when "0010",
-      not(ONE_C) when "0011",
-      X          when "0100",
-      -- not(Y) when "0101",
+   claYSig <=
+      Y          when "0000", -- X+Y
+      not(Y)     when "0001", -- X-Y
+      ONE_C      when "0010", -- X+1
+      not(ONE_C) when "0011", -- X-1
+      X          when "0100", -- X+X
       Y when others;
 
    -- Select between arithmetic and logic mode
    with aluOperationSig select
-   S <=
+   s_sig <=
       -- Arithmetic mode
-      claSSig         when "0000",
-      claSSig         when "0001",
-      claSSig         when "0010",
-      claSSig         when "0011",
-      claSSig         when "0100",
+      claSSig         when "0000", -- X+Y
+      claSSig         when "0001", -- X-Y
+      claSSig         when "0010", -- X+1
+      claSSig         when "0011", -- X-1
+      claSSig         when "0100", -- X+X
       (others => '1') when "0101", -- minus 1 (two's complement)
 
       -- Logic mode
@@ -88,5 +96,9 @@ begin
       X               when "1110",
       Y               when "1111",
       (others => '0') when others;
+
+   S <= s_sig; -- Drive outputs
+   Pout     <= claPoutSig;
+   Gout <= claGoutSig;
 
 end NDV;

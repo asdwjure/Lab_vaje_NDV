@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- Title       : cla_add_n_bit_tb
+-- Title       : alu_tb.vhd
 -- Project     : Default Project Name
 --------------------------------------------------------------------------------
--- File        : cla_add_n_bit_tb.vhd
+-- File        : alu_cla_tb.vhd
 -- Author      : User Name <user.email@user.company.com>
 -- Company     : User Company Name
--- Created     : Fri Nov 12 19:38:11 2021
--- Last update : Mon Nov 15 19:47:28 2021
+-- Created     : Mon Nov 15 18:28:27 2021
+-- Last update : Mon Nov 15 18:46:47 2021
 -- Platform    : Default Part Number
 -- Standard    : <VHDL-2008 | VHDL-2002 | VHDL-1993 | VHDL-1987>
 --------------------------------------------------------------------------------
 -- Copyright (c) 2021 User Company Name
 -------------------------------------------------------------------------------
--- Description: Test bench for N-bit CLA adder
+-- Description: Testbench for alu_cla.vhd. Testing addition of two numers
 --------------------------------------------------------------------------------
 -- Revisions:  Revisions and documentation are controlled by
 -- the revision control system (RCS).  The RCS should be consulted
@@ -27,49 +27,43 @@ use ieee.std_logic_textio.all;
 
 -----------------------------------------------------------
 
-entity cla_add_n_bit_tb is
+entity alu_tb is
 
-end entity cla_add_n_bit_tb;
+end entity alu_tb;
 
 -----------------------------------------------------------
 
-architecture testbench of cla_add_n_bit_tb is
+architecture testbench of alu_tb is
 
 	-- Testbench DUT generics
-	constant n : natural := 4;
+	constant n : natural := 8;
 
 	-- Testbench DUT ports
-	signal Cin              : std_logic;
-	signal X, Y             : std_logic_vector(n-1 downto 0);
-	signal S                : std_logic_vector(n-1 downto 0);
-	signal Gout, Pout, Cout : std_logic;
+	signal M                                          : std_logic;
+	signal F                                          : std_logic_vector(2 downto 0);
+	signal X, Y                                       : std_logic_vector(n-1 downto 0);
+	signal S                                          : std_logic_vector(n-1 downto 0);
+	signal Negative, Cout, Overflow, Zero, Gout, Pout : std_logic;
 
 begin
-
 	-----------------------------------------------------------
 	-- Testbench Stimulus
 	-----------------------------------------------------------
 	p_Stim : process
 	begin
 		wait for 10 ns;
-
-		Cin <= '0';
-
-		for i in 0 to 2**n - 1 loop
-			for j in 0 to 2**n - 1 loop
-				X <= std_logic_vector(to_unsigned(i, n));
-				Y <= std_logic_vector(to_unsigned(j, n));
-				wait for 10 ns;
-			end loop;
-		end loop;
-
-		Cin <= '1';
+		M <= '0';
+		F <= "000";
+		X <= (others => '0');
+		Y <= (others => '0');
 
 		for i in 0 to 2**n - 1 loop
 			for j in 0 to 2**n - 1 loop
-				X <= std_logic_vector(to_unsigned(i, n));
-				Y <= std_logic_vector(to_unsigned(j, n));
-				wait for 10 ns;
+
+			X <= std_logic_vector(to_unsigned(i,n));
+			Y <= std_logic_vector(to_unsigned(j,n));
+			wait for 10 ns;
+
 			end loop;
 		end loop;
 		
@@ -80,18 +74,22 @@ begin
 	-----------------------------------------------------------
 	-- Entity Under Test
 	-----------------------------------------------------------
-	DUT : entity work.cla_add_n_bit
+	DUT : entity work.alu_cla
 		generic map (
 			n => n
 		)
 		port map (
-			Cin  => Cin,
-			X    => X,
-			Y    => Y,
-			S    => S,
-			Gout => Gout,
-			Pout => Pout,
-			Cout => Cout
+			M        => M,
+			F        => F,
+			X        => X,
+			Y        => Y,
+			S        => S,
+			Negative => Negative,
+			Cout     => Cout,
+			Overflow => Overflow,
+			Zero     => Zero,
+			Gout     => Gout,
+			Pout     => Pout
 		);
 
 end architecture testbench;
