@@ -1,0 +1,9 @@
+NET A(3) LOC=A10; 		#DIP 5
+NET A(2) LOC=B9;		#DIP 6
+NET A(1) LOC=C9;		#DIP 7
+NET A(0) LOC=C12;		#DIP 8
+
+net S(3) loc = A13; 	#led 3
+net S(2) loc = C13; 	#led 2
+net S(1) loc = D12;	#led 1
+net S(0) loc = C6; 	#led 0

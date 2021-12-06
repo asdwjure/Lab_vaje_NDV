@@ -1,0 +1,23 @@
+# LEDs
+NET LED(6) LOC=M12;	#7segment - G
+NET LED(5) LOC=L13;	#7segment - F
+NET LED(4) LOC=P12;	#7segment - E
+NET LED(3) LOC=N11;	#7segment - D
+NET LED(2) LOC=N14;	#7segment - C
+NET LED(1) LOC=H12;	#7segment - B
+NET LED(0) LOC=L14;	#7segment - A
+
+
+NET nDIGIT(0) LOC=F12;
+NET nDIGIT(1) LOC=J12;
+NET nDIGIT(2) LOC=M13;
+NET nDIGIT(3) LOC=K14;
+
+NET ASCII_NEW LOC=M5;
+
+# Neutral clock 
+NET clk LOC=B8;
+
+NET ps2_clk LOC=B1;
+NET ps2_data LOC=C3;
+

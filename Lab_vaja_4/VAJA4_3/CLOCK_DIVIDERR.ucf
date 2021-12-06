@@ -1,0 +1,3 @@
+net CLK_IN		loc = B8;	#master clock 50 MHz
+net CLK_OUT		loc = C6;	#led 0
+net nRST 		loc = C12;	# BTN0
