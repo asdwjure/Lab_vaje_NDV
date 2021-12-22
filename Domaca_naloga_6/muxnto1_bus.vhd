@@ -20,16 +20,34 @@ ARCHITECTURE NDV OF muxnto1_bus IS
    signal mux_addr : mux_addr_type := (others => (others => '0'));
 BEGIN
 
-   u_muxnto1 : entity work.muxnto1
-      generic map (
-         n_addr => n_addr
-      )
-      port map (
-         s => s,
-         w => w,
-         f => f
-      );
+   -- std_logic array to std_logic_vector conversion
+   p_bit2vector : process(w)
 
+      variable mux_addr_col : std_logic_vector(2**n_addr -1 downto 0) := (others => '0');
 
+   begin
+      for i in 0 to (bus_width - 1) loop   -- Row
+         for j in 0 to (2**n_addr -1) loop -- Column
+            mux_addr_col(j) := w(j,i);
+         end loop;
+
+         mux_addr(i) <= mux_addr_col; -- connect variable to column of std_logic_vector
+      end loop;
+   end process p_bit2vector;
+
+   -- Connecting to single bit muxes
+   mux_gen : for i in 0 to (bus_width - 1) generate
+
+      u_muxnto1 : entity work.muxnto1
+         generic map (
+            n_addr => n_addr
+         )
+         port map (
+            s => s,
+            w => mux_addr(i),
+            f => f(i)
+         );
+
+   end generate mux_gen;
 
 END NDV;

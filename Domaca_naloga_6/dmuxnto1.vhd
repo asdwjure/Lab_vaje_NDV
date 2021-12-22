@@ -25,5 +25,4 @@ BEGIN
 
    f <= f_sig when w = '1' else (others => '0');
 
-
 END NDV;
