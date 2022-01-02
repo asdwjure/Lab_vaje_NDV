@@ -1,0 +1,13 @@
+# LEDs on the BASYS2 board
+net nY					loc = N5; 	#LD4 - negative logic	- current serial out bit from piso
+net state_code(3) 	loc = P6; 	#LD3 
+net state_code(2) 	loc = P7; 	#LD2 
+net state_code(1) 	loc = M11;	#LD1 
+net state_code(0) 	loc = M5; 	#LD0 
+
+net nX					loc = P11; 	#SW0
+
+net nRST					loc = L3;	#SW1
+net nTRIGGER 			loc = G12;	#BTN0
+
+NET "nTRIGGER" CLOCK_DEDICATED_ROUTE = FALSE;
