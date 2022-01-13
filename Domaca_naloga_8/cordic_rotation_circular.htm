@@ -1,0 +1,354 @@
+﻿<html>
+<head>
+
+<style type="text/css">
+
+	body {
+		margin:0;
+		padding:0;
+		background-color:#FFFFFF;
+		font-family: Verdana;
+		font-size:8pt;
+		color:#000000;
+	}
+
+	div.centered {
+		text-align: left;
+		font-family: Verdana;
+		font-size: 10pt;
+		position:relative;
+		left:50%;
+		width:800px;
+		margin-top:0px;
+		margin-left:-400px;
+	}
+
+	hr.CORDIC {
+		border-width: 1px;
+		border-style:solid;
+		border-color:#B13A43;		
+		width:800px;
+	}
+
+	table.CORDIC {
+		border-width: 1px;
+		border-style:solid;
+		border-color:black;
+		background-color: white;
+		text-align: center;
+		width:800px;
+	}
+
+	tr {		
+		border-width: inherit;
+		border-style:inherit;
+		border-color:inherit;
+	}
+
+	td.left {		
+		border-width: 1px;
+		border-style:inherit;
+		border-color:inherit;
+		text-align:left;
+	}
+
+	td.center {		
+		border-width: inherit;
+		border-style:inherit;
+		border-color:inherit;
+		text-align:center;
+	}
+
+	th {		
+		border-width: inherit;
+		border-style:inherit;
+		color:#B13A43;
+		text-align:center;
+	}
+
+	th.right {		
+		border-width: inherit;
+		border-style:inherit;
+		color:#B13A43;
+		text-align:right;
+	}
+	
+	td.right {		
+		border-width: inherit;
+		border-style:inherit;
+		border-color:inherit;
+		text-align:right;
+	}
+
+	input {
+		font-family : Verdana;
+	}
+
+	A:link {font-weight:normal; font-family: Verdana; font-size: 10pt; color: #B13A43; text-decoration:none;}
+	A:visited {font-weight:normal;	font-family: Verdana; font-size: 10pt; color: #B13A43; text-decoration:none}
+	A:active {font-weight:normal;	font-family: Verdana; font-size: 10pt; color: #B13A43}
+	A:hover {font-weight:normal;	font-family: Verdana; font-size: 10pt; text-decoration:underline;}
+	 
+	caption      { font-family: Verdana; font-size: 12pt; color: #B13A43; font-weight: bold}
+	p            { font-family: Verdana; font-size: 10pt;}
+	h1           { font-family: Verdana; color: #000000; padding-top:0px; padding-bottom:0px; font-size: 16px; font-weight: bold}
+	h2           { font-family: Verdana; color: #000000; padding-top:0px; padding-bottom:0px; font-size: 15px; font-weight: bold}
+	h3           { font-family: Verdana; color: #000000; padding-top:0px; padding-bottom:0px; font-size: 14px; font-weight: bold}
+	h4           { font-family: Verdana; color: #000000; padding-top:0px; padding-bottom:0px; font-size: 13px; font-weight: bold}
+	h5           { font-family: Verdana; color: #000000; padding-top:0px; padding-bottom:0px; font-size: 12px; font-weight: bold}
+	h6           { font-family: Verdana; color: #000000; padding-top:0px; padding-bottom:0px; font-size: 10pt; font-weight: bold}
+	}
+</style>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>CORDIC ROTATION CIRCULAR SIN COS</title>
+
+<script =="" "javascript"="">
+
+var KC = 6.0725293500888142e-01; //constant for circular mode cordic
+var HALF_PI = Math.PI / 2.0;
+var precision = 32;	// no more than 32 bit precision (note - this is binary precision, not decimal!)
+
+var elementary_angles = [	7.8539816339744827e-01,
+							4.6364760900080606e-01,
+							2.4497866312686413e-01,
+							1.2435499454676144e-01,
+							6.2418809995957351e-02,
+							3.1239833430268277e-02,
+							1.5623728620476830e-02,
+							7.8123410601011116e-03,
+							3.9062301319669717e-03,
+							1.9531225164788189e-03,
+							9.7656218955931937e-04,
+							4.8828121119489829e-04,
+							2.4414062014936175e-04,
+							1.2207031189367021e-04,
+							6.1035156174208768e-05,
+							3.0517578115526093e-05,
+							1.5258789061315760e-05,
+							7.6293945311019699e-06,
+							3.8146972656064960e-06,
+							1.9073486328101870e-06,
+							9.5367431640596080e-07,
+							4.7683715820308876e-07,
+							2.3841857910155801e-07,
+							1.1920928955078067e-07,
+							5.9604644775390553e-08,
+							2.9802322387695303e-08,
+							1.4901161193847654e-08,
+							7.4505805969238281e-09];
+
+function Conv2fixedPt (x, n) {	
+	var shift = Math.pow( 2, (n-3));
+	return (x * shift);
+}
+
+function Conv2real (x, n) {
+	var shift = Math.pow( 2, (n-3));
+	return (x / shift);
+}
+
+function CORDIC ( obj, x0, y0, z0, n ) {
+	
+	var x = Conv2fixedPt(x0, n);
+	var y = Conv2fixedPt(y0, n);
+	var z = Conv2fixedPt(z0, n);
+	
+	var Result = new Object();
+	obj.cordic_iterations.value = "k\tx(hex)\ty(hex)\tz(hex)\n";
+	for (k = 0; k < n; k++) {
+		var x_temp = x;
+		if ( z >= 0.0) {
+		   x -= (y >> k);
+		   y += (x_temp >> k);
+		   z -= Conv2fixedPt(elementary_angles[k], n);
+		}
+		else {
+		   x += (y >> k);
+		   y -= (x_temp >> k);
+		   z += Conv2fixedPt(elementary_angles[k], n);
+		}
+		obj.cordic_iterations.value = obj.cordic_iterations.value + k + "\t" + (~~x).toString(16) + "\t" + (~~y).toString(16) + "\t" + (~~z).toString(16) + "\n";
+	}
+	
+	Result.x = Conv2real( x, n);
+	Result.y = Conv2real( y, n);
+	Result.z = Conv2real( z, n);
+	
+	return Result;
+}
+
+function CORDIC_SIN(obj) {
+	
+	var x = obj.angle.value;
+	var x_rounded = Conv2real( Conv2fixedPt(x, precision), precision);
+	var x_rounded_fixpt = ~~(Conv2fixedPt(x_rounded, precision));
+	
+	obj.cordic_error.value = 2 * Conv2real( 1, precision);
+		
+	obj.angle_rounded.value = x_rounded;
+		
+	obj.angle_rounded_fixpt_hex.value = x_rounded_fixpt.toString(16);
+		
+	var result = new Object();
+	obj.math_sin.value = Math.sin(x_rounded);
+
+	if (x < 1.6  && x > -1.6) {		
+		result = CORDIC( obj, KC, 0.0, x, precision);
+				
+		obj.delta_sin.value = obj.math_sin.value - result.y;
+		
+		return obj.cordic_sin.value = result.y;
+	}
+
+	var n = ~~(x / HALF_PI);	//find actual angle quadrant
+
+	switch ( n % 4 )	{ //quadrant
+		case 0 :
+			result = CORDIC( obj, KC, 0.0, x - n * HALF_PI, precision);
+			
+			obj.delta_sin.value = obj.math_sin.value - (result.y);
+			
+			return obj.cordic_sin.value =  result.y;		
+			break;
+		case 1 :
+			result = CORDIC( obj, KC, 0.0, x - n * HALF_PI, precision);
+			
+			obj.delta_sin.value = obj.math_sin.value - (result.x);
+			
+			return obj.cordic_sin.value =  result.x;		
+			break;
+		case 2 :
+			result = CORDIC( obj, KC, 0.0, x - n * HALF_PI, precision);
+			
+			obj.delta_sin.value = obj.math_sin.value - (-result.y);
+			
+			return obj.cordic_sin.value = (-result.y);
+			break;
+		case 3 :
+			result = CORDIC( obj, KC, 0.0, x - n * HALF_PI, precision);
+			
+			obj.delta_sin.value = obj.math_sin.value - (-result.x);
+			
+			return obj.cordic_sin.value = (-result.x);
+			break;
+	};
+}
+
+function CORDIC_COS(obj) {
+
+	var x = obj.angle.value;
+	var x_rounded = Conv2real( Conv2fixedPt(x, precision), precision);
+	
+	obj.cordic_error.value = 2 * Conv2real( 1, precision);
+	
+	obj.angle_rounded.value = x_rounded;
+	
+	var result = new Object();
+	obj.math_cos.value = Math.cos(x_rounded);
+	
+	if (x < 1.6  && x > -1.6) {		
+		result = CORDIC( obj, KC, 0.0, x, precision);
+		
+		obj.delta_cos.value = obj.math_cos.value - result.x;
+		
+		return obj.cordic_cos.value = result.x;
+	}
+
+	var n = ~~(x / HALF_PI);	//find actual angle quadrant
+
+	switch ( n % 4 )	{ //quadrant
+		case 0 :
+			result = CORDIC( obj, KC, 0.0, x - n * HALF_PI, precision);
+			
+			obj.delta_cos.value = obj.math_cos.value - result.x;
+			
+			return obj.cordic_cos.value =  result.x;		
+			break;
+		case 1 :
+			result = CORDIC( obj, KC, 0.0, x - n * HALF_PI, precision);
+			
+			obj.delta_cos.value = obj.math_cos.value - (-(result.y));
+			
+			return obj.cordic_cos.value = -(result.y);		
+			break;
+		case 2 :
+			result = CORDIC( obj, KC, 0.0, x - n * HALF_PI, precision);
+			
+			obj.delta_cos.value = obj.math_cos.value - (-(result.x));
+			
+			return obj.cordic_cos.value = (-result.x);
+			break;
+		case 3 :
+			result = CORDIC( obj, KC, 0.0, x - n * HALF_PI, precision);
+			
+			obj.delta_cos.value = obj.math_cos.value - (result.y);
+			
+			return obj.cordic_cos.value = result.y;
+			break;
+	};
+}
+
+</script>
+
+</head>
+
+<body target="mainpage">
+	<div class='centered'>
+		<form>
+		
+			<table class='cordic'>
+				<caption>COordinate ROtation DIgital Computer</caption>
+				<tr>		
+					<td></td>
+					<td class='right'>&#x03D5;(rad):</td>
+					<td class='left'><input type="text" name="angle" size="20"></td>
+					<td  class='left'><input type="button" value="Calculate" onclick="CORDIC_SIN(this.form); CORDIC_COS(this.form)"></td>
+				</tr>
+			</table>
+			<hr class='cordic'></hr>
+			<table class='cordic'>
+				<caption>Results</caption>
+				<tr>
+					<td></td>
+					<td  class='right'>LSB error:</td>
+					<td class='left'><input type="text" name="cordic_error" size="25"></td>
+					<td></td>
+				</tr>
+
+				<tr>		
+					<th class='right'>&#x03D5;<sub>rounded</sub>(rad):</th>
+					<td class='left'><input type="text" name="angle_rounded" size="20"></td>
+					<th class='right'>&#x03D5;<sub>rounded</sub>(hex):</th>
+					<td class='left'><input type="text" name="angle_rounded_fixpt_hex" size="20"></td>
+					<td></td>
+				</tr>
+
+				<tr>
+					<th></th>
+					<th class='center'>CORDIC</th>
+					<th class='center'>MATH</th>
+					<th class='center'>&#916;</th>		
+				</tr>
+				<tr>		
+					<th>sin(&#x03D5;<sub>rounded</sub>):</th>
+					<td class='left'><input type="text" name="cordic_sin" size="20"></td>
+					<td class='left'><input type="text" name="math_sin" size="20"></td>
+					<td class='left'><input type="text" name="delta_sin" size="25"></td>
+				</tr>
+				<tr>		
+					<th>cos(&#x03D5;<sub>rounded</sub>):</th>
+					<td class='left'><input type="text" name="cordic_cos" size="20"></td>
+					<td class='left'><input type="text" name="math_cos" size="20"></td>
+					<td class='left'><input type="text" name="delta_cos" size="25"></td>
+				</tr>
+				<tr>
+					<td  class='center' colspan='4'>
+						<textarea class= 'cordic' rows="33" cols="50" name="cordic_iterations"></textarea>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>
